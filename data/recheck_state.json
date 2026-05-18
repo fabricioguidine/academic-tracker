@@ -1,0 +1,76 @@
+{
+  "https://sbseg.sbc.org.br/2026/": {
+    "ok": true,
+    "status": 404,
+    "final_url": "https://sbseg.sbc.org.br/2026/",
+    "raw_bytes": 203,
+    "text_bytes": 78,
+    "text_hash": "fc26b1fbb334",
+    "keywords": [],
+    "is_blank": true,
+    "checked_at": "2026-04-28"
+  },
+  "https://sbseg.sbc.org.br/": {
+    "ok": true,
+    "status": 200,
+    "final_url": "https://sbseg.sbc.org.br/",
+    "raw_bytes": 215,
+    "text_bytes": 0,
+    "text_hash": "e3b0c44298fc",
+    "keywords": [],
+    "is_blank": true,
+    "checked_at": "2026-04-28"
+  },
+  "https://sbmf.sbc.org.br/2026/": {
+    "ok": false,
+    "error": "ConnectionError: HTTPSConnectionPool(host='sbmf.sbc.org.br', port=443): Max retries exceeded with url: /2026/ (Caused by NameResolutionEr",
+    "checked_at": "2026-04-28"
+  },
+  "https://wscad.sbc.org.br/2026/": {
+    "ok": true,
+    "status": 403,
+    "final_url": "https://wscad.sbc.org.br/2026/",
+    "raw_bytes": 207,
+    "text_bytes": 82,
+    "text_hash": "557270898b79",
+    "keywords": [],
+    "is_blank": true,
+    "checked_at": "2026-04-28"
+  },
+  "https://webmedia.sbc.org.br/2026/": {
+    "ok": true,
+    "status": 403,
+    "final_url": "https://webmedia.sbc.org.br/2026/",
+    "raw_bytes": 207,
+    "text_bytes": 82,
+    "text_hash": "557270898b79",
+    "keywords": [],
+    "is_blank": true,
+    "checked_at": "2026-04-28"
+  },
+  "https://sibgrapi.sbc.org.br/2026/": {
+    "ok": true,
+    "status": 200,
+    "final_url": "https://sibgrapi.sbc.org.br/2026/",
+    "raw_bytes": 438,
+    "text_bytes": 13,
+    "text_hash": "00736a1cd1f6",
+    "keywords": [],
+    "is_blank": true,
+    "checked_at": "2026-04-28"
+  },
+  "http://enancib.ancib.org/": {
+    "ok": true,
+    "status": 200,
+    "final_url": "https://enancib.ancib.org/enancib/pt_BR",
+    "raw_bytes": 499596,
+    "text_bytes": 106814,
+    "text_hash": "4941b999592f",
+    "keywords": [
+      "abstract",
+      "submissão"
+    ],
+    "is_blank": false,
+    "checked_at": "2026-04-28"
+  }
+}
