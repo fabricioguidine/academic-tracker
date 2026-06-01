@@ -2,11 +2,7 @@
 
 <img src=".github/assets/banner.svg" alt="academic-tracker" width="100%" />
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-
-[![Python](https://img.shields.io/badge/python-3.x+-blue.svg)](https://www.python.org)
-
-[![Streamlit](https://img.shields.io/badge/Streamlit-app-ff4b4b.svg)](https://streamlit.io)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) [![Python](https://img.shields.io/badge/python-3.x+-blue.svg)](https://www.python.org) [![Streamlit](https://img.shields.io/badge/Streamlit-app-ff4b4b.svg)](https://streamlit.io)
 
 </div>
 
