@@ -1,35 +1,20 @@
-<div align="center">
+# academic-tracker
 
-<img src=".github/assets/banner.svg" alt="academic-tracker" width="100%" />
+Local Streamlit dashboard for tracking CS / Information Sciences academic venues: deadlines, a submission pipeline, and rankings. It is Brazil-first (CAPES Qualis, SBC events) with international support, backed by a single local SQLite database.
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) [![Python](https://img.shields.io/badge/python-3.x+-blue.svg)](https://www.python.org) [![Streamlit](https://img.shields.io/badge/Streamlit-app-ff4b4b.svg)](https://streamlit.io)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) [![Python](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org)
 
-</div>
-
-> Local Streamlit dashboard for tracking CS / Information Sciences academic venues: deadlines, submission pipeline, and rankings.
-
-academic-tracker is a single-user Streamlit app backed by a local SQLite database. It is Brazil-first (CAPES Qualis, SBC events) with international support, and ships command-line loaders that pull venue rankings and publication data from CORE, Scimago/SJR, DBLP, OpenAlex, and WikiCFP.
-
-## Table of Contents
-
-- [Features](#features)
-- [How it works](#how-it-works)
-- [Requirements](#requirements)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Data sources](#data-sources)
-- [Project structure](#project-structure)
-- [License](#license)
+The app is single-user. Command-line loaders pull venue rankings and publication data from CORE, Scimago/SJR, DBLP, OpenAlex, and WikiCFP, writing into the same database the dashboard reads.
 
 ## Features
 
-- **Deadlines view** — upcoming CFPs within a configurable window (7–365 days ahead), filterable by scope (BR / INT / both), with Qualis, CORE, and SJR quartile columns.
-- **Submission pipeline** — kanban-style board across nine statuses (idea, drafting, submitted, under review, revision, accepted, rejected, published, withdrawn).
-- **Venues view** — full venue list with filters for Qualis, CORE, type, and submission mode, plus a dedicated panel for journals open for rolling submission.
-- **Productivity stats** — submissions by status (Plotly bar chart) and computed acceptance rate over decided submissions.
-- **Add / Edit** — manual entry forms for submissions, venues, and deadlines.
-- **CLI loaders** — populate venue rankings and deadlines from external sources, writing into the same SQLite database.
-- **BR site re-check** — `loaders/recheck.py` polls a fixed list of Brazilian event sites and flags when CFP-relevant keywords or content newly appear, persisting state to `data/recheck_state.json`.
+- **Deadlines view:** upcoming CFPs within a configurable window (7-365 days ahead), filterable by scope (BR / INT / both), with Qualis, CORE, and SJR quartile columns.
+- **Submission pipeline:** board across nine statuses (idea, drafting, submitted, under review, revision, accepted, rejected, published, withdrawn).
+- **Venues view:** full venue list with filters for Qualis, CORE, type, and submission mode, plus a panel for journals open for rolling submission.
+- **Productivity stats:** submissions by status (Plotly bar chart) and computed acceptance rate over decided submissions.
+- **Add / Edit:** manual entry forms for submissions, venues, and deadlines.
+- **CLI loaders:** populate venue rankings and deadlines from external sources into the SQLite database.
+- **BR site re-check:** `loaders/recheck.py` polls a fixed list of Brazilian event sites and flags when CFP-relevant keywords or content newly appear, persisting state to `data/recheck_state.json`.
 
 ## How it works
 
@@ -75,7 +60,7 @@ The database holds three tables: `venues`, `deadlines`, and `submissions` (see `
 
 ## Requirements
 
-- Python 3.x
+- Python 3.12+
 - Dependencies (see `requirements.txt`): streamlit, pandas, plotly, requests, beautifulsoup4, lxml, openpyxl, python-dateutil
 
 ## Installation
