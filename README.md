@@ -2,21 +2,44 @@
 
 Local Streamlit dashboard to track academic publication venues (CS / Information Sciences) — deadlines, submission pipeline, and rankings. Brazil-first (Qualis CAPES, SBC events) with international support (CORE, Scimago/SJR, DBLP, OpenAlex, WikiCFP).
 
+Runs on Linux, macOS and Windows. Every push is tested on all three via the CI matrix.
+
 ## Setup
 
+Requires Python 3.11+.
+
+**Linux / macOS**
+
 ```bash
-cd C:\Users\fabri\academic-tracker
-python -m venv .venv
-.venv\Scripts\activate
+git clone https://github.com/fabricioguidine/academic-tracker.git
+cd academic-tracker
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
-python db.py                    # initialize SQLite schema
-python seeds/seed.py            # load starter Brazilian venue list
-streamlit run app.py            # opens http://localhost:8501
+python db.py              # initialize SQLite schema
+python seeds/seed.py      # load starter Brazilian venue list
+streamlit run app.py      # opens http://localhost:8501
 ```
+
+**Windows (PowerShell)**
+
+```powershell
+git clone https://github.com/fabricioguidine/academic-tracker.git
+cd academic-tracker
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+python db.py
+python seeds\seed.py
+streamlit run app.py
+```
+
+The database lives at `data/academic.db` by default. Set the `ACADEMIC_TRACKER_DB`
+environment variable to point at another location (used by the test suite).
 
 ## Loaders
 
-All loaders write into `data/academic.db`. Run only what you need.
+All loaders write into the active database. Run only what you need.
 
 | Loader | Source | How |
 |---|---|---|
@@ -42,9 +65,20 @@ All loaders write into `data/academic.db`. Run only what you need.
 - **Stats** — submissions by status, acceptance rate
 - **Add / Edit** — manual entry for submissions, venues, deadlines
 
+## Testing
+
+```bash
+pip install -r requirements-dev.txt
+pytest
+```
+
+The suite is end-to-end: it boots the schema, runs the CLI loaders as real
+subprocesses, and drives the Streamlit app via `streamlit.testing` — so a green
+run proves the app actually works on the host OS. See [ARCHITECTURE.md](ARCHITECTURE.md).
+
 ## Roadmap
 
 - Lattes XML import (`scriptLattes`) for existing CV
-- Auto-refresh DBLP nightly via Windows Task Scheduler
+- Auto-refresh DBLP nightly (cron / Task Scheduler)
 - Topic preferences saved per-user, used to filter WikiCFP
 - BR ↔ INT acronym map for cross-ranking joins
