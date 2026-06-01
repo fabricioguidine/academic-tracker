@@ -1,50 +1,156 @@
-# academic-tracker
+<div align="center">
 
-Local Streamlit dashboard to track academic publication venues (CS / Information Sciences) — deadlines, submission pipeline, and rankings. Brazil-first (Qualis CAPES, SBC events) with international support (CORE, Scimago/SJR, DBLP, OpenAlex, WikiCFP).
+<img src=".github/assets/banner.svg" alt="academic-tracker" width="100%" />
 
-## Setup
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+[![Python](https://img.shields.io/badge/python-3.x+-blue.svg)](https://www.python.org)
+
+[![Streamlit](https://img.shields.io/badge/Streamlit-app-ff4b4b.svg)](https://streamlit.io)
+
+</div>
+
+> Local Streamlit dashboard for tracking CS / Information Sciences academic venues: deadlines, submission pipeline, and rankings.
+
+academic-tracker is a single-user Streamlit app backed by a local SQLite database. It is Brazil-first (CAPES Qualis, SBC events) with international support, and ships command-line loaders that pull venue rankings and publication data from CORE, Scimago/SJR, DBLP, OpenAlex, and WikiCFP.
+
+## Table of Contents
+
+- [Features](#features)
+- [How it works](#how-it-works)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Data sources](#data-sources)
+- [Project structure](#project-structure)
+- [License](#license)
+
+## Features
+
+- **Deadlines view** — upcoming CFPs within a configurable window (7–365 days ahead), filterable by scope (BR / INT / both), with Qualis, CORE, and SJR quartile columns.
+- **Submission pipeline** — kanban-style board across nine statuses (idea, drafting, submitted, under review, revision, accepted, rejected, published, withdrawn).
+- **Venues view** — full venue list with filters for Qualis, CORE, type, and submission mode, plus a dedicated panel for journals open for rolling submission.
+- **Productivity stats** — submissions by status (Plotly bar chart) and computed acceptance rate over decided submissions.
+- **Add / Edit** — manual entry forms for submissions, venues, and deadlines.
+- **CLI loaders** — populate venue rankings and deadlines from external sources, writing into the same SQLite database.
+- **BR site re-check** — `loaders/recheck.py` polls a fixed list of Brazilian event sites and flags when CFP-relevant keywords or content newly appear, persisting state to `data/recheck_state.json`.
+
+## How it works
+
+External data is pulled in via standalone CLI loaders (manual file imports or HTTP fetches), normalized, and written into a local SQLite database. The Streamlit app reads that database to render the dashboard views.
+
+```mermaid
+flowchart LR
+    subgraph Sources
+        Q[CAPES Qualis XLSX]
+        C[CORE CSV]
+        S[Scimago SJR CSV]
+        D[DBLP API]
+        O[OpenAlex API]
+        W[WikiCFP scrape]
+        B[SBC events portal]
+    end
+
+    subgraph Loaders
+        LQ[load_qualis]
+        LC[load_core]
+        LS[load_sjr]
+        LD[load_dblp]
+        LO[load_openalex]
+        LW[load_wikicfp]
+        LB[load_sbc]
+    end
+
+    Q --> LQ
+    C --> LC
+    S --> LS
+    D --> LD
+    O --> LO
+    W --> LW
+    B --> LB
+
+    LQ & LC & LS & LD & LO & LW & LB --> DB[(SQLite: academic.db)]
+    SEED[seeds/seed.py + br_venues.csv] --> DB
+    DB --> APP[Streamlit app.py]
+    APP --> UI[Deadlines / Pipeline / Venues / Stats / Add-Edit]
+```
+
+The database holds three tables: `venues`, `deadlines`, and `submissions` (see `schema.sql`).
+
+## Requirements
+
+- Python 3.x
+- Dependencies (see `requirements.txt`): streamlit, pandas, plotly, requests, beautifulsoup4, lxml, openpyxl, python-dateutil
+
+## Installation
 
 ```bash
-cd C:\Users\fabri\academic-tracker
+git clone https://github.com/fabricioguidine/academic-tracker.git
+cd academic-tracker
 python -m venv .venv
-.venv\Scripts\activate
+.venv\Scripts\activate          # Windows; use source .venv/bin/activate on Unix
 pip install -r requirements.txt
-python db.py                    # initialize SQLite schema
-python seeds/seed.py            # load starter Brazilian venue list
+python db.py                    # initialize the SQLite schema
+python seeds/seed.py            # load the starter Brazilian venue list
+```
+
+## Usage
+
+Launch the dashboard:
+
+```bash
 streamlit run app.py            # opens http://localhost:8501
 ```
 
-## Loaders
+Run loaders from the CLI as needed; each writes into `data/academic.db`:
 
-All loaders write into `data/academic.db`. Run only what you need.
+```bash
+python -m loaders.load_qualis   path/to/qualis.xlsx
+python -m loaders.load_core     path/to/core.csv
+python -m loaders.load_sjr      path/to/scimago.csv
+python -m loaders.load_dblp     123/4567
+python -m loaders.load_openalex 0000-0000-0000-0000
+python -m loaders.load_wikicfp  "machine learning" databases
+python -m loaders.load_sbc      2026
+python -m loaders.recheck
+```
 
-| Loader | Source | How |
-|---|---|---|
-| `load_qualis` | CAPES Qualis (BR journals/conferences) | Download XLSX from [Sucupira](https://sucupira.capes.gov.br/sucupira/public/consultas/coleta/veiculoPublicacaoQualis/listaConsultaGeralPeriodicos.jsf), then `python -m loaders.load_qualis path/to/qualis.xlsx` |
-| `load_core` | CORE (INT, CS conferences) | Export CSV from [portal.core.edu.au](http://portal.core.edu.au/conf-ranks/), then `python -m loaders.load_core core.csv` |
-| `load_sjr` | Scimago JR (INT journals) | Download CSV from [scimagojr.com](https://www.scimagojr.com/journalrank.php), then `python -m loaders.load_sjr scimago.csv` |
-| `load_dblp` | DBLP (your CS publications) | Look up your PID at dblp.org, then `python -m loaders.load_dblp 123/4567` |
-| `load_openalex` | OpenAlex (your publications + venues) | `python -m loaders.load_openalex 0000-0000-0000-0000` |
-| `load_wikicfp` | WikiCFP deadlines (INT) | `python -m loaders.load_wikicfp "machine learning" databases` |
-| `load_sbc` | SBC events portal (BR) | `python -m loaders.load_sbc 2026` (opens browser; deadlines added manually via dashboard) |
+## Data sources
 
-## Schema
+| Source | Loader | What it provides | How it is accessed |
+|---|---|---|---|
+| CAPES Qualis | `load_qualis` | BR journal/conference Qualis tier | Manual XLSX download (Sucupira), matched by exact title |
+| CORE | `load_core` | INT CS conference rank | Manual CSV export, matched by acronym |
+| Scimago / SJR | `load_sjr` | INT journal best quartile | Manual CSV download, matched by exact title |
+| DBLP | `load_dblp` | Your publications and their venues | HTTP fetch of the author PID XML |
+| OpenAlex | `load_openalex` | Your works and host venues | HTTP API by ORCID (no key needed) |
+| WikiCFP | `load_wikicfp` | INT conference deadlines | HTML scrape by topic search |
+| SBC events | `load_sbc` | BR event list helper | Opens the SBC portal in a browser; deadlines entered manually |
 
-- **venues** — `name, acronym, type (conference/journal/workshop), scope (BR/INT/both), area, qualis, core, sjr_quartile, h5, url, notes`
-- **deadlines** — `abstract_due, paper_due, notification, camera_ready, event_start, location, cfp_url`
-- **submissions** — `title, venue_id, status (idea → drafting → submitted → under_review → revision → accepted/rejected → published), topics, coauthors, notes`
+## Project structure
 
-## Views
+```
+academic-tracker/
+├── app.py                  # Streamlit dashboard entry point
+├── db.py                   # SQLite connection + schema bootstrap
+├── schema.sql              # venues, deadlines, submissions tables
+├── requirements.txt
+├── data/
+│   └── recheck_state.json  # persisted state for the BR site re-check
+├── loaders/
+│   ├── load_qualis.py
+│   ├── load_core.py
+│   ├── load_sjr.py
+│   ├── load_dblp.py
+│   ├── load_openalex.py
+│   ├── load_wikicfp.py
+│   ├── load_sbc.py
+│   └── recheck.py
+└── seeds/
+    ├── seed.py             # loads the starter venue list
+    └── br_venues.csv
+```
 
-- **Deadlines** — upcoming CFPs in a window, filterable by scope/Qualis/CORE
-- **Pipeline** — kanban-style by submission status
-- **Venues** — full venue list, filterable
-- **Stats** — submissions by status, acceptance rate
-- **Add / Edit** — manual entry for submissions, venues, deadlines
+## License
 
-## Roadmap
-
-- Lattes XML import (`scriptLattes`) for existing CV
-- Auto-refresh DBLP nightly via Windows Task Scheduler
-- Topic preferences saved per-user, used to filter WikiCFP
-- BR ↔ INT acronym map for cross-ranking joins
+Released under the [MIT License](LICENSE).
